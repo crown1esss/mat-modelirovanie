@@ -37,9 +37,11 @@ def solution(a,b,n,h):
 
 
 #  итерационный метод
-def iteration(A,b,u):
+def iteration(A,b):
   eps = 10e-7
   n_iter = 10000
+  u = np.random.normal(0,1,A.shape[0])
+
   max_A = np.max(A)
   max_b = np.max(b)
   max_a_b = np.max(np.array(max_A, max_b))
@@ -58,42 +60,33 @@ def iteration(A,b,u):
 
 
 # метод бисопряженных градиентов 
-def bisjoint_gradient_method(A,b,u):
-
+def bisjoint_gradient_method(A,b):
   eps = 10e-7
   n_iter = 10000
-  max_A = np.max(A)
-  max_b = np.max(b)
-  max_a_b = np.max(np.array(max_A, max_b))
-  A = A/max_a_b
-  b = b/max_a_b
-  alph = 1 
+  u = np.random.normal(0,1,A.shape[0])
+  p_k0 = 1
+  alph = 1
   omg = 1
-  p = 0.
-  v = 0.
-  B = np.diag(np.ones(A.shape[0])) - A
-  r = B - A @ u
-  r1 = r
-  rh = 1
+  v = p = s = np.zeros(A.shape[0])
+  r = b - A @ u
+  r1 = r 
   for i in range(n_iter):
-    p_k = (np.conj(r1) @ r)
-    b_k = ( p_k / rh ) * ( alph / omg )
-    p = r + ( b_k *  ( p  - omg  *  v))
+    p_k = (np.conj(r1) @ r) 
+    b_k = ( p_k / p_k0 ) * ( alph / omg )
+    p = r + ( b_k *  ( p  - omg  *  v)) 
     v = A @ p 
-    alph = p_k / (np.conj(r1) @ v)
-    s_k = r  - (alph * v)
-    t_k = A @ s_k
-    omg = (np.conj(t_k) @ s_k) / (np.conj(t_k) @ t_k)
-    u_res = u + (omg * s_k) + (alph * p)
+    alph = p_k / (np.conj(r1) @ v) 
+    s_k = r  - alph * v 
+    t_k = A @ s_k 
+    omg = (t_k @ s_k) / (t_k @ t_k)   
+    u_res = u + (omg * s_k) + (alph * p) 
     r = s_k - (omg * t_k) 
-    dif = abs(u - u_res)
+    dif = u_res - u
     if np.amax((np.sqrt(dif @ dif)) / (np.sqrt(b @ b))) < eps:
-      break 
-    rh = p_k
+        break
+    p_k0 = p_k
     u = u_res.copy()
-
-  return u_res
-
+    return u_res
 
 def main():
   a = 0 
@@ -101,11 +94,10 @@ def main():
   n = 3
   h = H(a,b,n)
   A,X = solution(a,b,n,h)
-  u =   np.random.uniform(-1., 1., n)
   print( 'iteration : ')
-  print(iteration(A,X,u))
+  print(iteration(A,X))
   print( 'bisjoint_gradient_method : ')
-  print(bisjoint_gradient_method(A,X,u))
+  print(bisjoint_gradient_method(A,X))
   test(A,X)
 if __name__ == '__main__' :
     main()

@@ -32,7 +32,6 @@ def test(A, X):
     print(np.linalg.solve(A, X))
     print(analitical(X))
 
-
 def grad_2(A, b):
     n_iter = 10000
     eps = 10e-7
@@ -56,7 +55,6 @@ def grad_2(A, b):
 
     return U_current
 
-
 def main():
     a = 0
     b = 1
@@ -67,7 +65,6 @@ def main():
     print('gradient 2 : ')
     print(gradient)
     test(A, X)
-
 
 if __name__ == '__main__':
     main()
